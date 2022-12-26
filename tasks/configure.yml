@@ -1,0 +1,23 @@
+---
+
+- name: Configure git email
+  git_config: 
+    name: user.email
+    scope: global
+    value: "{{ git_user_email }}"
+
+- name: Configure git user name
+  git_config: 
+    name: user.name
+    scope: global
+    value: "{{ git_user_name }}"
+
+- name: Create build directories if it does not exist
+  file:
+    path: "{{ build_dir }}/{{ item }}"
+    state: directory
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
+  loop:
+    - lineage
+    - system_dump

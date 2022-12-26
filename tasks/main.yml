@@ -1,90 +1,12 @@
 ---
-- name: Install the platform-tools
-  become: yes
-  apt: 
-    name:
-      - adb
-      - fastboot
-    update_cache: yes
-    state: latest
-
-- name: Install the build packages
-  become: yes
-  apt: 
-    name:
-      - bc
-      - bison
-      - brotli
-      - build-essential
-      - ccache
-      - curl
-      - flex
-      - g++-multilib
-      - gcc-multilib
-      - git
-      - gnupg
-      - gperf
-      - imagemagick
-      - lib32ncurses5-dev
-      - lib32readline-dev
-      - lib32z1-dev
-      - libelf-dev
-      - liblz4-tool
-      - libncurses5
-      - libncurses5-dev
-      - libsdl1.2-dev 
-      - libssl-dev 
-      - libxml2 
-      - libxml2-utils 
-      - lzop 
-      - patchelf
-      - pngcrush 
-      - python-is-python3
-      - rsync
-      - schedtool 
-      - squashfs-tools 
-      - xsltproc
-      - zip 
-      - zlib1g-dev
-    state: latest
-
-- name: Install the repo command
-  become: yes
-  get_url: 
-    url: https://storage.googleapis.com/git-repo-downloads/repo
-    dest: /usr/local/bin/repo
-    mode: '0755'
-
-- name: Create the lineage directory
-  file:
-    path: "{{ build_dir }}/lineage"
-    state: directory
-    owner: "{{ ansible_user_id }}"
-    group: "{{ ansible_user_id }}"
-
-- name: Create the system_dump directory
-  file:
-    path: "{{ build_dir }}/system_dump"
-    state: directory
-    owner: "{{ ansible_user_id }}"
-    group: "{{ ansible_user_id }}"
-
-- name: Configure git email
-  git_config: 
-    name: user.email
-    scope: global
-    value: "{{ git_user_email }}"
-
-- name: Configure git user name
-  git_config: 
-    name: user.name
-    scope: global
-    value: "{{ git_user_name }}"
+- include_tasks: setup-Debian.yml
+- include_tasks: configure.yml
 
 - name: Initialize the LineageOS source repository
   shell: repo init -u https://github.com/LineageOS/android.git -b lineage-17.1
   args:
     chdir: "{{ build_dir }}/lineage"
+  when: not skip_sync | bool
 
 - name: Download the source code
   shell: repo sync

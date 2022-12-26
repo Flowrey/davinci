@@ -79,18 +79,8 @@
   args:
     chdir: "{{ build_dir }}/lineage/device/xiaomi/davinci/"
 
-- name: Create temporary log file
-  tempfile:
-    state: file
-    suffix: buildlog
-  register: buildlog
-
 - name: Start the build
-  shell: |
-    echo "" > "{{ buildlog }}"
-    source build/envsetup.sh
-    croot
-    brunch davinci >> "{{ buildlog }}"
+  shell: "source build/envsetup.sh && croot && brunch davinci >> {{ build_dir }}/build.log"
   args:
     chdir: "{{ build_dir }}/lineage"
     executable: /bin/bash
